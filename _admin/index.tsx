@@ -738,6 +738,7 @@ export default function Component() {
     </div>
 </div>
 ) : (
+<>
 <div className="dashboard-wrapper">
     <div className="sidebar">
         <div className="sidebar-logo">
@@ -1124,9 +1125,9 @@ export default function Component() {
 {/* Script tags removed */}
 
 {/* PHP code removed */}
-
-</div>
+</>
 )}
+</div>
 </div>
     </>
   );
