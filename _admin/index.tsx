@@ -1,6 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function Component() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(false);
+    
+    // Simulate network delay
+    setTimeout(() => {
+      setLoading(false);
+      if (username === 'admin' && password === 'admin123') {
+        setIsLoggedIn(true);
+      } else {
+        setError(true);
+      }
+    }, 1500);
+  };
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    setIsLoggedIn(false);
+    setUsername('');
+    setPassword('');
+  };
   return (
     <>
 {/* DOCTYPE removed */}
@@ -668,6 +696,7 @@ export default function Component() {
 <div className="body-wrapper">
 
 {/* PHP code removed */}
+{!isLoggedIn ? (
 <div className="login-wrapper">
     <div className="login-container">
         <div className="login-header">
@@ -678,7 +707,7 @@ export default function Component() {
             <p>Student Management System</p>
         </div>
         <div className="login-body">
-            <div id="login-error" className="alert alert-danger hidden">
+            <div id="login-error" className={`alert alert-danger ${error ? '' : 'hidden'}`}>
                 <i className="fas fa-circle-exclamation"></i>
                 <span id="error-text">Invalid credentials</span>
             </div>
@@ -688,30 +717,27 @@ export default function Component() {
                 <span id="success-text">Login successful!</span>
             </div>
 
-            <form id="login-form" onSubmit="handleLogin(event)">
+            <form id="login-form" onSubmit={handleLogin}>
                 <div className="form-group">
                     <label className="form-label" htmlFor="username">Username</label>
-                    <input type="text" id="username" name="username" className="form-input" placeholder="Enter username" required />
+                    <input type="text" id="username" name="username" className="form-input" placeholder="Enter username" required value={username} onChange={e => setUsername(e.target.value)} />
                 </div>
 
                 <div className="form-group">
                     <label className="form-label" htmlFor="password">Password</label>
-                    <input type="password" id="password" name="password" className="form-input" placeholder="Enter password" required />
+                    <input type="password" id="password" name="password" className="form-input" placeholder="Enter password" required value={password} onChange={e => setPassword(e.target.value)} />
                 </div>
 
-                <button type="submit" className="btn btn-primary" id="login-button">
-                    <span id="button-text">Login</span>
-                    <div id="spinner" className="spinner hidden"></div>
+                <button type="submit" className="btn btn-primary" id="login-button" disabled={loading}>
+                    <span id="button-text">{loading ? 'Logging in...' : 'Login'}</span>
+                    {loading && <div id="spinner" className="spinner"></div>}
                 </button>
             </form>
 
         </div>
     </div>
 </div>
-
-{/* Script tags removed */}
-
-{/* PHP code removed */}
+) : (
 <div className="dashboard-wrapper">
     <div className="sidebar">
         <div className="sidebar-logo">
@@ -752,7 +778,7 @@ export default function Component() {
             {/* PHP code removed */}
 
             <div className="nav-section-title" style={{ marginTop: '30px' }}>Account</div>
-            <a href="?logout=true" className="nav-link">
+            <a href="#" onClick={handleLogout} className="nav-link">
                 <i className="fas fa-sign-out-alt"></i>
                 Logout
             </a>
@@ -767,10 +793,10 @@ export default function Component() {
             </div>
             <div className="user-menu">
                 <div className="user-info">
-                    <div className="user-name">{/* PHP code removed */}</div>
-                    <div className="user-role">{/* PHP code removed */}</div>
+                    <div className="user-name">Data Needed</div>
+                    <div className="user-role">Data Needed</div>
                 </div>
-                <div className="user-avatar">{/* PHP code removed */}</div>
+                <div className="user-avatar">Data Needed</div>
             </div>
         </div>
 
@@ -1100,6 +1126,7 @@ export default function Component() {
 {/* PHP code removed */}
 
 </div>
+)}
 </div>
     </>
   );

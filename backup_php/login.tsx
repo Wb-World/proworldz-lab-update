@@ -1,6 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Component() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(false);
+    
+    // Simulate network delay
+    setTimeout(() => {
+      setLoading(false);
+      if (email === 'user@example.com' && password === 'password123') {
+        navigate('/ss/dashboard');
+      } else {
+        setError(true);
+      }
+    }, 1500);
+  };
+
   return (
     <>
 {/* DOCTYPE removed */}
@@ -263,30 +286,32 @@ export default function Component() {
         <p>Access your professional learning dashboard</p>
       </div>
 
+      <form onSubmit={handleLogin}>
       <div className="form-group">
-        <input type="email" id="mail-login" name="mail-login" placeholder=" " required />
+        <input type="email" id="mail-login" name="mail-login" placeholder=" " required value={email} onChange={e => setEmail(e.target.value)} />
         <label>Email Address</label>
       </div>
 
       <div className="form-group">
-        <input type="password" id="passw-login" name="passw-login" placeholder=" " required />
+        <input type="password" id="passw-login" name="passw-login" placeholder=" " required value={password} onChange={e => setPassword(e.target.value)} />
         <label>Password</label>
         <button type="button" className="password-toggle" id="togglePassword">
           <i className="fas fa-eye"></i>
         </button>
       </div>
 
-      <div className="error" id="errorMessage">
+      <div className="error" id="errorMessage" style={{ display: error ? 'block' : 'none' }}>
         <i className="fas fa-exclamation-circle"></i> Invalid credentials. Please try again.
       </div>
       
-      <div className="loading" id="loading">
+      <div className="loading" id="loading" style={{ display: loading ? 'block' : 'none' }}>
         Authenticating...
       </div>
 
-      <button type="submit" className="btn-login" onClick="login()" id="loginBtn">
-        <i className="fas fa-sign-in-alt"></i> Login
+      <button type="submit" className="btn-login" id="loginBtn" disabled={loading}>
+        <i className="fas fa-sign-in-alt"></i> {loading ? 'Logging in...' : 'Login'}
       </button>
+      </form>
     </div>
   </div>
 

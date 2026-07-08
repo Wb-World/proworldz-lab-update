@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Component1 from './api/includes/dashboard_sidebar';
-import Component2 from './api/nav_helper';
+
 import Component3 from './backup_php/about-home';
 // Removed backup_php/aboutus.tsx
 // Removed backup_php/assignment.tsx
@@ -156,8 +155,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/api/includes/dashboard_sidebar" element={<Component1 />} />
-        <Route path="/api/nav_helper" element={<Component2 />} />
+
         <Route path="/about-home" element={<Component3 />} />
         {/* Removed route for backup_php/aboutus.tsx */}
         {/* Removed route for backup_php/assignment.tsx */}

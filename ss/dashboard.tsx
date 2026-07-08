@@ -43,15 +43,15 @@ export default function Component() {
   <div className="topbar" style={{ width: '100%' }}>
     <div className="topbar-content">
       <div className="topbar-left" style={{  }}>
-        <h1>Welcome back, {/* PHP echo removed */} 👋</h1>
-        <p>{/* PHP echo removed */}</p>
+        <h1>Welcome back, Data Needed 👋</h1>
+        <p>Data Needed</p>
       </div>
       <div className="topbar-right">
         <div className="topbar-bell">
           <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
           <span className="topbar-bell-dot"></span>
         </div>
-        <div className="topbar-avatar" title="Profile" onClick="location='profile'">{/* PHP echo removed */}</div>
+        <div className="topbar-avatar" title="Profile" onClick={() => window.location.href='profile'}>Data Needed</div>
       </div>
     </div>
   </div>
