@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | ProWorldz</title>
+    <link rel="icon" type="image/png" href="image.png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            overscroll-behavior: none;
+        }
+
+        :root {
+            --bg: #0d1015;
+            --card: #1a1d24;
+            --border: rgba(255, 255, 255, 0.1);
+            --primary: #c0151a;
+            --primary-alt: #e5191e;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --destructive: #ef4444;
+            --muted: #2d3748;
+            --muted-fg: #94a3b8;
+            --fg: #f8fafc;
+            --sidebar: #1a1d24;
+            --radius: 0.625rem;
+            --gap: 1.5rem;
+            --sides: 1.5rem;
+            --red: #e5191e;
+            --red-glow: rgba(229, 25, 30, 0.3);
+        }
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background: var(--bg);
+            color: var(--fg);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--muted);
+            border-radius: 3px
+        }
+
+        /* LOADER */
+        #loader-wrapper {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            transition: opacity 0.5s ease, visibility 0.5s;
+        }
+
+        #loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(229, 25, 30, 0.1);
+            border-top-color: var(--primary-alt);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        #loader-text {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--primary-alt);
+            letter-spacing: 0.2em;
+            animation: pulse-l 1.5s infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        @keyframes pulse-l {
+
+            0%,
+            100% {
+                opacity: 0.5
+            }
+
+            50% {
+                opacity: 1
+            }
+        }
+
+        body.loaded #loader-wrapper {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* LAYOUT */
+        .desktop-container {
+            display: grid;
+            grid-template-columns: 280px 1fr 340px;
+            gap: var(--gap);
+            min-height: 100vh;
+            padding: var(--sides);
+            background: var(--bg);
+        }
+
+        .desktop-sidebar,
+        .desktop-main,
+        .desktop-right {
+            display: flex;
+            flex-direction: column;
+            gap: var(--gap);
+        }
+
+        /* CARD */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(229, 25, 30, 0.3);
+            box-shadow: 0 4px 20px rgba(229, 25, 30, 0.1);
+        }
+
+        /* SIDEBAR */
+        .profile-card {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .avatar-ring {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-alt));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #fff;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            position: relative;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0)
+            }
+
+            50% {
+                transform: translateY(-6px)
+            }
+        }
+
+        .avatar-ring img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--fg);
+        }
+
+        .profile-role {
+            font-size: 0.75rem;
+            color: var(--muted-fg);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .coins-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 20px;
+            padding: 0.4rem 1rem;
+            font-size: 0.875rem;
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        .coins-badge i {
+            animation: spin 3s linear infinite;
+        }
+
+        .nav-section {
+            padding: 0 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--muted-fg);
+            letter-spacing: 0.1em;
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: calc(var(--radius) - 2px);
+            text-decoration: none;
+            color: var(--fg);
+            transition: all 0.2s;
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .nav-item:hover {
+            background: rgba(248, 250, 252, 0.05);
+            transform: translateX(4px);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .nav-item.active:hover {
+            transform: translateX(4px);
+        }
+
+        .nav-icon {
+            width: 1.2rem;
+            height: 1.2rem;
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--destructive);
+            color: #fff;
+            font-size: 0.7rem;
+            border-radius: 10px;
+            padding: 0.1rem 0.5rem;
+            font-weight: 700;
+        }
+
+        /* STATS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 1.25rem;
+            transition: all 0.3s;
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            transition: transform 0.4s ease;
+            transform: scaleX(0);
+            transform-origin: left;
+        }
+
+        .stat-card.purple::before {
+            background: linear-gradient(90deg, var(--primary), var(--primary-alt));
+        }
+
+        .stat-card.green::before {
+            background: linear-gradient(90deg, var(--success), #34d399);
+        }
+
+        .stat-card.yellow::before {
+            background: linear-gradient(90deg, var(--warning), #fbbf24);
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(229, 25, 30, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--muted-fg);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value.purple {
+            color: var(--primary);
+        }
+
+        .stat-value.green {
+            color: var(--success);
+        }
+
+        .stat-value.yellow {
+            color: var(--warning);
+        }
+
+        .stat-change {
+            font-size: 0.75rem;
+            color: var(--muted-fg);
+        }
+
+        .stat-change .pos {
+            color: var(--success);
+        }
+
+        .stat-change .neg {
+            color: var(--destructive);
+        }
+
+        /* PROGRESS */
+        .progress-bar-bg {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+            height: 8px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .progress-bar.purple {
+            background: linear-gradient(90deg, var(--primary), var(--primary-alt));
+        }
+
+        .progress-bar.green {
+            background: linear-gradient(90deg, var(--success), #34d399);
+        }
+
+        /* WELCOME HEADER */
+        .welcome-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .welcome-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .welcome-title span {
+            background: linear-gradient(135deg, var(--primary), var(--primary-alt));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-sub {
+            font-size: 0.85rem;
+            color: var(--muted-fg);
+            margin-top: 0.3rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        /* COURSES */
+        .courses-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .course-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: calc(var(--radius) - 2px);
+            padding: 1.25rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-item:hover {
+            background: rgba(229, 25, 30, 0.08);
+            border-color: rgba(229, 25, 30, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .course-item:active {
+            transform: scale(0.97);
+        }
+
+        .course-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+        }
+
+        .course-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .course-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--fg);
+            margin-bottom: 0.3rem;
+        }
+
+        .course-progress {
+            font-size: 0.75rem;
+            color: var(--muted-fg);
+            margin-bottom: 0.5rem;
+        }
+
+        .course-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .status-locked {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--muted-fg);
+        }
+
+        .status-new {
+            background: rgba(229, 25, 30, 0.15);
+            color: var(--primary);
+        }
+
+        /* LEADERBOARD */
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.875rem 1.25rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+
+        .leaderboard-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .rank-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .rank-1 {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            color: #000;
+        }
+
+        .rank-2 {
+            background: linear-gradient(135deg, #94a3b8, #cbd5e1);
+            color: #000;
+        }
+
+        .rank-3 {
+            background: linear-gradient(135deg, #b45309, #d97706);
+            color: #fff;
+        }
+
+        .rank-other {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--muted-fg);
+        }
+
+        .lb-name {
+            flex: 1;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .lb-coins {
+            font-size: 0.875rem;
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        .lb-you {
+            background: rgba(229, 25, 30, 0.15);
+            border: 1px solid rgba(229, 25, 30, 0.3);
+            border-radius: calc(var(--radius)-2px);
+        }
+
+        /* ASSIGNMENTS */
+        .assign-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s;
+        }
+
+        .assign-item:last-child {
+            border-bottom: none;
+        }
+
+        .assign-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .assign-check {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.7rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .assign-check.done {
+            background: var(--success);
+            border-color: var(--success);
+            color: #fff;
+        }
+
+        .assign-check:not(.done):hover {
+            border-color: var(--primary);
+        }
+
+        .assign-title {
+            flex: 1;
+            font-size: 0.875rem;
+        }
+
+        .assign-title.done-text {
+            text-decoration: line-through;
+            color: var(--muted-fg);
+        }
+
+        .assign-due {
+            font-size: 0.75rem;
+            color: var(--muted-fg);
+            white-space: nowrap;
+        }
+
+        .assign-due.overdue {
+            color: var(--destructive);
+        }
+
+        /* RIGHT SIDEBAR */
+        .section-header-inner {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted-fg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header-inner a {
+            font-size: 0.75rem;
+            color: var(--primary);
+            text-decoration: none;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .section-header-inner a:hover {
+            text-decoration: underline;
+        }
+
+        /* BUTTON */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: calc(var(--radius)-2px);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: #7c3aed;
+            box-shadow: 0 0 20px rgba(229, 25, 30, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+
+        .btn-secondary {
+            background: var(--muted);
+            color: var(--fg);
+            border-color: var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: #374151;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--muted-fg);
+            border-color: var(--border);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--fg);
+        }
+
+        /* NOTIFICATION DOT */
+        .notif-btn {
+            position: relative;
+            width: 42px;
+            height: 42px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: calc(var(--radius)-2px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+            color: var(--muted-fg);
+        }
+
+        .notif-btn:hover {
+            background: rgba(229, 25, 30, 0.1);
+            border-color: var(--primary);
+            color: var(--fg);
+        }
+
+        .notif-dot {
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            width: 10px;
+            height: 10px;
+            background: var(--destructive);
+            border-radius: 50%;
+            border: 2px solid var(--bg);
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0)
+            }
+        }
+
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: scale(0.8)
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1)
+            }
+        }
+
+        .anim-1 {
+            animation: fadeInUp 0.4s ease 0.1s both
+        }
+
+        .anim-2 {
+            animation: fadeInUp 0.4s ease 0.2s both
+        }
+
+        .anim-3 {
+            animation: fadeInUp 0.4s ease 0.3s both
+        }
+
+        .anim-4 {
+            animation: fadeInUp 0.4s ease 0.4s both
+        }
+
+        /* RIPPLE */
+        .ripple-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(0);
+            animation: ripple-anim 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-anim {
+            to {
+                transform: scale(4);
+                opacity: 0
+            }
+        }
+
+        /* RESPONSIVE */
+        @media(max-width:1400px) {
+            .desktop-container {
+                grid-template-columns: 260px 1fr 300px
+            }
+        }
+
+        @media(max-width:1100px) {
+            .desktop-container {
+                grid-template-columns: 240px 1fr
+            }
+
+            .desktop-right {
+                display: none
+            }
+        }
+
+        @media(max-width:768px) {
+            .desktop-container {
+                grid-template-columns: 1fr;
+                padding: 1rem
+            }
+
+            .desktop-sidebar {
+                display: none
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .courses-grid {
+                grid-template-columns: 1fr
+            }
+        }
+
+        /* BADGE */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 9999px;
+            padding: 0.2rem 0.65rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-destructive {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--destructive);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .badge-primary {
+            background: rgba(229, 25, 30, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(229, 25, 30, 0.3);
+        }
+
+        p.section-desc {
+            padding: 1rem 1.25rem 0;
+            font-size: 0.8rem;
+            color: var(--muted-fg);
+        }
+    </style>
+
+    <!-- PWZ UNIVERSAL THEME -->
+    <link rel="stylesheet" href="pwz-theme.css">
+    <script src="pwz-theme.js"></script>
+
+    <style id="pwz-override">
+        /* ══ PROWORLDZ RED THEME OVERRIDES ══ */
+        :root {
+            --primary: #e5191e !important;
+            --primary-foreground: #ffffff !important;
+            --sidebar-primary: #e5191e !important;
+        }
+
+        /* Loader override */
+        #loader {
+            border-top-color: #e5191e !important;
+        }
+
+        #loader-text {
+            color: #e5191e !important;
+        }
+
+        /* Nav active */
+        .nav-item.active {
+            background: rgba(229, 25, 30, 0.1) !important;
+            color: #ff2a30 !important;
+        }
+
+        .nav-item:hover {
+            background: rgba(229, 25, 30, 0.07) !important;
+        }
+
+        /* Lab cards */
+        .lab-card::before {
+            background: linear-gradient(to bottom, #e5191e, #b01015) !important;
+        }
+
+        .lab-card:hover {
+            border-color: rgba(229, 25, 30, 0.5) !important;
+            box-shadow: 0 10px 30px rgba(229, 25, 30, 0.2) !important;
+        }
+
+        .lab-card-icon {
+            background: linear-gradient(135deg, #e5191e, #b01015) !important;
+        }
+
+        .lab-hero h1 {
+            background: linear-gradient(135deg, #ff2a30, #b01015) !important;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Buttons */
+        .button-default {
+            background: #e5191e !important;
+        }
+
+        .button-default:hover {
+            background: #ff2a30 !important;
+            box-shadow: 0 0 24px rgba(229, 25, 30, 0.4) !important;
+        }
+
+        .lab-btn {
+            background: linear-gradient(135deg, #e5191e, #b01015) !important;
+            box-shadow: 0 4px 20px rgba(229, 25, 30, 0.3) !important;
+        }
+
+        .lab-btn:hover {
+            background: linear-gradient(135deg, #ff2a30, #e5191e) !important;
+            transform: translateY(-3px) !important;
+        }
+
+        /* Editor/Output sections */
+        .editor-section::before,
+        .output-section::before {
+            background: linear-gradient(to right, #e5191e, #b01015) !important;
+        }
+
+        .editor-section:hover,
+        .output-section:hover {
+            border-color: rgba(229, 25, 30, 0.4) !important;
+            box-shadow: 0 10px 40px rgba(229, 25, 30, 0.2) !important;
+        }
+
+        /* Interpreter hero */
+        .interpreter-hero h1 {
+            background: linear-gradient(135deg, #ff2a30, #b01015) !important;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Terminal prompt */
+        .terminal-prompt {
+            color: #e5191e !important;
+        }
+
+        /* Progress fill */
+        .progress-fill {
+            background: linear-gradient(90deg, #b01015, #e5191e, #ff2a30) !important;
+        }
+
+        /* Status dot */
+        .status-dot {
+            background: #e5191e !important;
+        }
+
+        /* Env item */
+        .env-item {
+            border-color: rgba(229, 25, 30, 0.2) !important;
+            background: rgba(229, 25, 30, 0.06) !important;
+        }
+
+        .env-item i {
+            color: #e5191e !important;
+        }
+
+        /* Badges */
+        .badge-destructive {
+            background: #e5191e !important;
+        }
+
+        /* Section accent */
+        .section-accent {
+            background: #e5191e !important;
+        }
+
+        /* Coin notification */
+        .coin-notification {
+            background: linear-gradient(135deg, #b01015, #e5191e) !important;
+        }
+
+        /* Touch animation for all interactive elements */
+        .lab-card,
+        .card,
+        .button,
+        .button-default,
+        a[href] {
+            -webkit-tap-highlight-color: rgba(229, 25, 30, 0.15);
+        }
+
+        /* Body grid/line decoration */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background-image:
+                linear-gradient(rgba(229, 25, 30, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(229, 25, 30, 0.025) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+        }
+
+        *{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
+
+body{
+  background:#0e0e0e;
+  color:#fff;
+}
+
+/* Layout */
+.dashboard{
+  display:flex;
+}
+
+.menu{
+    padding-top: 50px;
+}
+
+/* SIDEBAR */
+.sidebar{
+  width:240px;
+  background:#121212;
+  padding:20px;
+  height:100vh;
+  position:fixed;
+  top:0;
+  left:0;
+}
+
+.logo{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  background:#ff5722;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  font-weight:700;
+  margin-bottom:40px;
+}
+
+.sidebar ul{
+  list-style:none;
+}
+
+.sidebar li{
+  display:flex;
+  align-items:center;
+  gap:15px;
+  padding:14px 16px;
+  margin-bottom:10px;
+  border-radius:12px;
+  cursor:pointer;
+  transition:.3s ease;
+}
+
+.sidebar li span{
+  font-size:15px;
+}
+
+.sidebar li i{
+  font-size:18px;
+  min-width:22px;
+}
+
+.sidebar li:hover,
+.sidebar li.active{
+  background:#1f1f1f;
+  box-shadow:0 0 12px rgba(255,87,34,.4);
+}
+
+/* MAIN */
+.main{
+  margin-left:240px;
+  padding:30px;
+  width:100%;
+}
+
+/* TOP BAR */
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:30px;
+}
+
+.search{
+  background:#1a1a1a;
+  padding:10px 18px;
+  border-radius:30px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:260px;
+}
+
+.search input{
+  background:none;
+  border:none;
+  outline:none;
+  color:#fff;
+  width:100%;
+}
+
+.profile{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.profile span{
+  font-size:13px;
+  opacity:.7;
+}
+
+.avatar{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:#ff5722;
+}
+
+/* WELCOME CARD */
+.welcome{
+  background:linear-gradient(135deg,#ff005d,#ff5722);
+  padding:30px;
+  border-radius:20px;
+  margin-bottom:30px;
+  transition:.4s ease;
+}
+
+.welcome h2{
+  margin:10px 0;
+}
+
+.welcome:hover{
+  transform:scale(1.02);
+}
+
+/* SECTION TITLE */
+.section-title{
+  margin:25px 0 15px;
+  color:#ff5722;
+}
+
+/* FINANCE CARDS */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+}
+
+.card{
+  background:#1a1a1a;
+  padding:28px;
+  border-radius:18px;
+  text-align:center;
+  transition:.4s ease;
+}
+
+.card h1{
+  margin-bottom:5px;
+}
+
+.card:hover{
+  transform:translateY(-8px);
+  box-shadow:0 0 22px rgba(255,87,34,.4);
+}
+
+.card.highlight{
+  border:2px solid #ff5722;
+}
+
+/* COURSES */
+.courses{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:20px;
+}
+
+.course{
+  background:#1a1a1a;
+  padding:20px;
+  border-radius:15px;
+  transition:.35s ease;
+}
+
+.course:hover{
+  background:#ff5722;
+  transform:translateY(-6px);
+}
+
+
+
+.profile{
+  display:flex;
+  align-items:center;
+  gap:15px;
+  position:relative;
+}
+
+.logout-btn{
+  margin-left:15px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 14px;
+  border-radius:20px;
+  background:#ff3c00;
+  color:#fff;
+  text-decoration:none;
+  font-size:13px;
+  transition:.3s;
+}
+
+.logout-btn:hover{
+  background:#ff1f00;
+  box-shadow:0 0 15px rgba(255,60,0,.5);
+}
+.menu-btn{
+  display:none;
+  font-size:22px;
+  cursor:pointer;
+  color:#fff;
+}
+@media(max-width:1024px){
+  .sidebar{
+    width:200px;
+  }
+
+  .main{
+    margin-left:200px;
+  }
+
+  .search{
+    width:220px;
+  }
+}
+
+@media(max-width:768px){
+
+  /* Show hamburger */
+  .menu-btn{
+    display:block;
+  }
+
+
+
+  /* Sidebar slide */
+  .sidebar{
+    position:fixed;
+    left:-100%;
+    top:0;
+    width:230px;
+    height:100vh;
+    z-index:1000;
+    transition:.4s ease;
+  }
+
+  .sidebar.active{
+    left:0;
+  }
+
+  /* Main full width */
+  .main{
+    margin-left:0;
+    padding:20px;
+  }
+
+  /* Topbar layout */
+  .topbar{
+    flex-wrap:wrap;
+    gap:15px;
+  }
+
+  .search{
+    width:100%;
+    order:3;
+  }
+
+  .profile{
+    margin-left:auto;
+  }
+
+  /* Cards & courses stack */
+  .cards,
+  .courses{
+    grid-template-columns:1fr;
+  }
+
+  /* Logout smaller */
+  .logout-btn{
+    padding:5px 12px;
+    font-size:12px;
+  }
+  .close-btn{
+    display:block;
+    z-index:1100;
+  }
+
+  .overlay.active{
+    display:block;
+  }
+}
+
+
+/* CLOSE BUTTON */
+.close-btn{
+  display:none;
+  position:absolute;
+  top:18px;
+  right:18px;
+  font-size:22px;
+  cursor:pointer;
+  color:#fff;
+}
+
+/* OVERLAY */
+.overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  z-index:900;
+}
+
+
+
+    </style>
+</head>
+
+<body>
+    <!-- Loader -->
+    <div id="loader-wrapper">
+        <div id="loader"></div>
+        <div id="loader-text">LOADING DASHBOARD...</div>
+    </div>
+
+    <div class="desktop-container">
+
+        <!-- LEFT SIDEBAR -->
+        <aside class="desktop-sidebar">
+            <!-- Profile -->
+            <div class="card anim-1">
+                <div class="profile-card">
+                    <div class="avatar-ring">
+                        <img src="images/eaglone/p-eaglone.png" alt="Avatar"
+                            onerror="this.style.display='none';this.parentElement.textContent='A'">
+                    </div>
+                    <div>
+                        <div class="profile-name">Alex Johnson</div>
+                        <div class="profile-role">ProWorldz Student</div>
+                    </div>
+                    <div class="coins-badge">
+                        <i class="fas fa-coins"></i>
+                        <span id="coinDisplay">2,450</span> EC
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="card anim-2">
+                <div style="padding:1rem 0.75rem;">
+                    <div class="nav-label">Main Menu</div>
+                    <div class="nav-section">
+                        <a href="dashboard.html" class="nav-item active ripple-container">
+                            <i class="fas fa-th-large nav-icon"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="lab.html" class="nav-item ripple-container">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <span>Laboratory</span>
+                        </a>
+                        <a href="tasks.html" class="nav-item ripple-container">
+                            <i class="fas fa-tasks nav-icon"></i>
+                            <span>Tasks</span>
+                        </a>
+                        <a href="ourcourse.html" class="nav-item ripple-container">
+                            <i class="fas fa-book nav-icon"></i>
+                            <span>Courses</span>
+                        </a>
+                        <a href="course_video.html" class="nav-item ripple-container">
+                            <i class="fas fa-video nav-icon"></i>
+                            <span>Course Video</span>
+                        </a>
+                        <a href="assignment.html" class="nav-item ripple-container">
+                            <i class="fas fa-file-alt nav-icon"></i>
+                            <span>Assignments</span>
+                        </a>
+                        <a href="leaderboard.html" class="nav-item ripple-container">
+                            <i class="fas fa-medal nav-icon"></i>
+                            <span>Leaderboard</span>
+                        </a>
+                        <a href="teams.html" class="nav-item ripple-container">
+                            <i class="fas fa-user-friends nav-icon"></i>
+                            <span>Teams</span>
+                        </a>
+                        <a href="tournament.html" class="nav-item ripple-container">
+                            <i class="fas fa-trophy nav-icon"></i>
+                            <span>Tournament</span>
+                        </a>
+                    </div>
+                    <div class="nav-label" style="margin-top:0.75rem;">Tools & Support</div>
+                    <div class="nav-section">
+                        <a href="contactus.html" class="nav-item ripple-container">
+                            <i class="fas fa-headset nav-icon"></i>
+                            <span>Contact Support</span>
+                        </a>
+                        <a href="https://dragotool.shop/" class="nav-item ripple-container" target="_blank">
+                            <i class="fas fa-dragon nav-icon"></i>
+                            <span>Drago Tool</span>
+                        </a>
+                        <a href="eaglone_shop.html" class="nav-item ripple-container">
+                            <i class="fas fa-store nav-icon"></i>
+                            <span>Eaglone Shop</span>
+                        </a>
+                        <a href="https://ctf-page.vercel.app/" class="nav-item ripple-container" target="_blank">
+                            <i class="fas fa-flag nav-icon"></i>
+                            <span>CTF Page</span>
+                        </a>
+                        <a href="download.html" class="nav-item ripple-container">
+                            <i class="fas fa-laptop-code nav-icon"></i>
+                            <span>Eaglone IDE</span>
+                        </a>
+                    </div>
+                    <div class="nav-label" style="margin-top:0.75rem;">Account</div>
+                    <div class="nav-section">
+                        <a href="logout.html" class="nav-item ripple-container" style="color:var(--destructive)">
+                            <i class="fas fa-sign-out-alt nav-icon"></i>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="desktop-main">
+            <!-- Welcome Header -->
+            <div class="card anim-1">
+                <div class="welcome-header">
+                    <div>
+                        <div class="welcome-title">Welcome back, <span>Alex</span> 👋</div>
+                        <div class="welcome-sub">You have 3 pending tasks and 2 active courses. Keep it up!</div>
+                    </div>
+                    <div class="header-actions">
+                        <div class="notif-btn" onclick="showNotifs(this)">
+                            <i class="fas fa-bell"></i>
+                            <div class="notif-dot"></div>
+                        </div>
+                        <a href="lab.html" class="pwz-btn pwz-btn-primary">
+                            <i class="fas fa-flask"></i> Open Lab
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid anim-2">
+                <div class="pwz-stat purple ripple-container">
+                    <div class="stat-label">Eagle Coins</div>
+                    <div class="stat-value purple" id="stat-coins">0</div>
+                    <div class="stat-change"><span class="pos">▲ +125</span> this week</div>
+                    <div class="pwz-progress">
+                        <div class="pwz-progress-fill purple" id="pb-coins" style="width:0%"></div>
+                    </div>
+                </div>
+                <div class="pwz-stat green ripple-container">
+                    <div class="stat-label">Assignments Done</div>
+                    <div class="stat-value green" id="stat-assign">0</div>
+                    <div class="stat-change"><span class="pos">▲ +4</span> this week</div>
+                    <div class="pwz-progress">
+                        <div class="pwz-progress-fill green" id="pb-assign" style="width:0%"></div>
+                    </div>
+                </div>
+                <div class="pwz-stat yellow ripple-container">
+                    <div class="stat-label">Current Rank</div>
+                    <div class="stat-value yellow" id="stat-rank">0</div>
+                    <div class="stat-change"><span class="pos">▲ +3</span> positions</div>
+                    <div class="pwz-progress">
+                        <div class="pwz-progress-fill purple" id="pb-rank" style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assignments -->
+            <div class="card anim-4">
+                <div class="section-header-inner">
+                    Recent Assignments
+                    <a href="assignment.html">View All →</a>
+                </div>
+                <div class="assign-item">
+                    <div class="assign-check done" onclick="toggleAssign(this)"><i class="fas fa-check"></i></div>
+                    <div class="assign-title done-text">SQL Injection Basics — Lab Report</div>
+                    <div class="assign-due">Apr 8</div>
+                </div>
+                <div class="assign-item">
+                    <div class="assign-check done" onclick="toggleAssign(this)"><i class="fas fa-check"></i></div>
+                    <div class="assign-title done-text">Python Script: Port Scanner</div>
+                    <div class="assign-due">Apr 10</div>
+                </div>
+                <div class="assign-item">
+                    <div class="assign-check" onclick="toggleAssign(this)"></div>
+                    <div class="assign-title">XSS Attack Vectors — Write-up</div>
+                    <div class="assign-due overdue">Apr 11 ⚠</div>
+                </div>
+                <div class="assign-item">
+                    <div class="assign-check" onclick="toggleAssign(this)"></div>
+                    <div class="assign-title">Buffer Overflow Analysis</div>
+                    <div class="assign-due">Apr 15</div>
+                </div>
+                <div class="assign-item">
+                    <div class="assign-check" onclick="toggleAssign(this)"></div>
+                    <div class="assign-title">Reverse Engineering Challenge #3</div>
+                    <div class="assign-due">Apr 18</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- RIGHT SIDEBAR -->
+        <aside class="desktop-right">
+            <!-- Leaderboard -->
+            <div class="card anim-2">
+                <div class="section-header-inner">
+                    Leaderboard
+                    <a href="leaderboard.html">Full →</a>
+                </div>
+                <div class="leaderboard-item">
+                    <div class="rank-num rank-1">1</div>
+                    <span class="lb-name">Ravi Kumar</span>
+                    <span class="lb-coins"><i class="fas fa-coins" style="font-size:0.75rem"></i> 8,420</span>
+                </div>
+                <div class="leaderboard-item">
+                    <div class="rank-num rank-2">2</div>
+                    <span class="lb-name">Priya Sharma</span>
+                    <span class="lb-coins"><i class="fas fa-coins" style="font-size:0.75rem"></i> 7,890</span>
+                </div>
+                <div class="leaderboard-item">
+                    <div class="rank-num rank-3">3</div>
+                    <span class="lb-name">Arjun.M</span>
+                    <span class="lb-coins"><i class="fas fa-coins" style="font-size:0.75rem"></i> 6,120</span>
+                </div>
+                <div class="leaderboard-item">
+                    <div class="rank-num rank-other">4</div>
+                    <span class="lb-name">Karthik.S</span>
+                    <span class="lb-coins"><i class="fas fa-coins" style="font-size:0.75rem"></i> 4,870</span>
+                </div>
+                <div class="leaderboard-item lb-you">
+                    <div class="rank-num" style="background:rgba(139,92,246,0.3);color:var(--primary);">7</div>
+                    <span class="lb-name" style="color:var(--primary);font-weight:600;">You (Alex)</span>
+                    <span class="lb-coins"><i class="fas fa-coins" style="font-size:0.75rem"></i> 2,450</span>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card anim-3">
+                <div class="section-header-inner">Quick Actions</div>
+                <div style="padding:1rem;display:flex;flex-direction:column;gap:0.75rem">
+                    <a href="lab/langs.html" class="pwz-btn pwz-btn-primary"
+                        style="justify-content:center;padding:0.875rem">
+                        <i class="fas fa-code"></i> Open Code Lab
+                    </a>
+                    <a href="lab/lin_term.html" class="pwz-btn pwz-btn-secondary"
+                        style="justify-content:center;padding:0.875rem">
+                        <i class="fas fa-terminal"></i> Open Terminal
+                    </a>
+                    <a href="tasks.html" class="btn btn-ghost" style="justify-content:center;padding:0.875rem">
+                        <i class="fas fa-clipboard-check"></i> View Tasks
+                    </a>
+                    <a href="eaglone_shop.html" class="btn btn-ghost"
+                        style="justify-content:center;padding:0.875rem;color:var(--warning)">
+                        <i class="fas fa-store"></i> Eagle Shop
+                    </a>
+                </div>
+            </div>
+
+            <!-- Activity Log -->
+            <div class="card anim-4">
+                <div class="section-header-inner">Recent Activity</div>
+                <div style="padding:0.5rem 0">
+                    <div
+                        style="padding:0.75rem 1.25rem;display:flex;gap:0.75rem;align-items:flex-start;border-bottom:1px solid rgba(255,255,255,0.05)">
+                        <div
+                            style="width:32px;height:32px;background:rgba(16,185,129,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-check" style="color:var(--success);font-size:0.8rem"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:0.8rem;color:var(--fg)">Completed SQL Injection Lab</div>
+                            <div style="font-size:0.72rem;color:var(--muted-fg)">2 hours ago · +50 EC</div>
+                        </div>
+                    </div>
+                    <div
+                        style="padding:0.75rem 1.25rem;display:flex;gap:0.75rem;align-items:flex-start;border-bottom:1px solid rgba(255,255,255,0.05)">
+                        <div
+                            style="width:32px;height:32px;background:rgba(245,158,11,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-coins" style="color:var(--warning);font-size:0.8rem"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:0.8rem;color:var(--fg)">Earned 125 Eagle Coins</div>
+                            <div style="font-size:0.72rem;color:var(--muted-fg)">Yesterday · Bonus reward</div>
+                        </div>
+                    </div>
+                    <div style="padding:0.75rem 1.25rem;display:flex;gap:0.75rem;align-items:flex-start">
+                        <div
+                            style="width:32px;height:32px;background:rgba(139,92,246,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-trophy" style="color:var(--primary);font-size:0.8rem"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:0.8rem;color:var(--fg)">Ranked up to position #7</div>
+                            <div style="font-size:0.72rem;color:var(--muted-fg)">2 days ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // Simulate loader
+        setTimeout(() => document.body.classList.add('loaded'), 800);
+
+        // Animate stat counters
+        function animateCounter(el, target, suffix = '') {
+            let current = 0;
+            const inc = target / 60;
+            const timer = setInterval(() => {
+                current += inc;
+                if (current >= target) { current = target; clearInterval(timer); }
+                el.textContent = Math.floor(current).toLocaleString() + suffix;
+            }, 20);
+        }
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                animateCounter(document.getElementById('stat-coins'), 2450);
+                animateCounter(document.getElementById('stat-assign'), 24);
+                animateCounter(document.getElementById('stat-rank'), 7);
+                // Animate progress bars
+                setTimeout(() => {
+                    document.getElementById('pb-coins').style.width = '62%';
+                    document.getElementById('pb-assign').style.width = '80%';
+                    document.getElementById('pb-rank').style.width = '45%';
+                }, 300);
+            }, 900);
+        });
+
+        // Ripple effect
+        document.querySelectorAll('.ripple-container').forEach(el => {
+            el.addEventListener('click', function (e) {
+                const rect = this.getBoundingClientRect();
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - rect.left - size / 2}px;top:${e.clientY - rect.top - size / 2}px`;
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 700);
+            });
+        });
+
+        // Toggle assignment
+        function toggleAssign(el) {
+            const isDone = el.classList.toggle('done');
+            const titleEl = el.nextElementSibling;
+            if (isDone) {
+                el.innerHTML = '<i class="fas fa-check"></i>';
+                titleEl.classList.add('done-text');
+                // Add coins animation
+                const coinEl = document.getElementById('coinDisplay');
+                const current = parseInt(coinEl.textContent.replace(/,/g, ''));
+                coinEl.textContent = (current + 25).toLocaleString();
+                coinEl.style.color = 'var(--warning)';
+                coinEl.style.transform = 'scale(1.2)';
+                setTimeout(() => { coinEl.style.transform = ''; coinEl.style.color = ''; }, 400);
+            } else {
+                el.innerHTML = '';
+                titleEl.classList.remove('done-text');
+            }
+        }
+
+        // Notifications
+        function showNotifs(btn) {
+            btn.querySelector('.notif-dot').style.display = 'none';
+            alert('🔔 Notifications:\n\n1. ✅ Assignment "SQL Injection" graded — A+\n2. 🏆 You rose to rank #7!\n3. 📅 Tournament starts April 15');
+        }
+
+        // Touch feedback
+        document.querySelectorAll('.course-item,.stat-card,.nav-item').forEach(el => {
+            el.addEventListener('touchstart', () => { el.style.transform = 'scale(0.97)'; }, { passive: true });
+            el.addEventListener('touchend', () => { setTimeout(() => el.style.transform = '', 150); }, { passive: true });
+        });
+    </script>
+</body>
+
+</html>
