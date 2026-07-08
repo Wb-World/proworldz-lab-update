@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function Component() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <>
 {/* DOCTYPE removed */}
@@ -1503,26 +1505,26 @@ export default function Component() {
     {/*  Navigation  */}
     <nav className="navbar" id="navbar">
         <div className="nav-container">
-            <a href="index" className="logo">
+            <a href="/" className="logo">
                 <img src="images/eaglone/p-eaglone.png" alt="ProWorldz Logo" className="logo-img" loading="lazy" /> 
                 <span className="logo-text">
                     PRO<span className="logo-accent">WORLDZ</span>
                 </span>
             </a>
 
-            <button className="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+            <button className={"menu-toggle" + (isMobileMenuOpen ? " active" : "")} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} aria-label="Toggle menu">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
 
-            <ul className="nav-links" id="navLinks">
-                <li><a href="index">Home</a></li>
-                <li><a href="about-home" className="active">About</a></li>
-                <li><a href="contact-home">Contact</a></li>
+            <ul className={"nav-links" + (isMobileMenuOpen ? " active" : "")} id="navLinks">
+                <li><a href="/">Home</a></li>
+                <li><a href="/about-home" className="active">About</a></li>
+                <li><a href="/contact-home">Contact</a></li>
             </ul>
 
-            <a href="login" className="nav-cta">
+            <a href="/login" className="nav-cta">
                 <i className="fas fa-sign-in-alt"></i>
                 Login
             </a>
@@ -1799,7 +1801,7 @@ export default function Component() {
         <div className="cta-content fade-in-up">
             <h2>Start Your Learning Journey</h2>
             <p>Join thousands of successful professionals who transformed their careers with our industry-focused education. Bridge the gap between education and industry with ProWorldz.</p>
-            <a href="index" className="btn btn-primary">
+            <a href="/" className="btn btn-primary">
                 Explore Our Programs
                 <i className="fas fa-arrow-right"></i>
             </a>

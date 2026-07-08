@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function Component() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <>
 {/* DOCTYPE removed */}
@@ -1389,19 +1391,19 @@ img {
                 </span>
             </a>
 
-            <div className="menu-toggle" id="menuToggle">
+            <div className={"menu-toggle" + (isMobileMenuOpen ? " active" : "")} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
                 <span></span>
                 <span></span>
                 <span></span>
             </div>
 
-            <ul className="nav-links" id="navLinks">
-                <li><a href="index" className="active">Home</a></li>
-                <li><a href="about-home">About</a></li>
-                <li><a href="contact-home">Contact</a></li>
+            <ul className={"nav-links" + (isMobileMenuOpen ? " active" : "")} id="navLinks">
+                <li><a href="/" className="active">Home</a></li>
+                <li><a href="/about-home">About</a></li>
+                <li><a href="/contact-home">Contact</a></li>
             </ul>
 
-            <a href="login" className="nav-cta">
+            <a href="/login" className="nav-cta">
                 <i className="fas fa-sign-in-alt"></i>
                 Login
             </a>
@@ -1663,11 +1665,11 @@ img {
             <h2>Ready to Transform Your Career?</h2>
             <p>Join thousands of professionals who have already elevated their skills and secured their dream positions in the tech industry.</p>
             <div className="hero-cta-group">
-                <a href="login" className="btn btn-primary">
+                <a href="/login" className="btn btn-primary">
                     <i className="fas fa-rocket"></i>
                     Get Started Today
                 </a>
-                <a href="contact-home" className="btn btn-secondary">
+                <a href="/contact-home" className="btn btn-secondary">
                     <i className="fas fa-comments"></i>
                     Talk to Our Team
                 </a>

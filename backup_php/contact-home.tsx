@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function Component() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <>
 {/* DOCTYPE removed */}
@@ -688,26 +690,26 @@ body, h1, h2, h3, h4, h5, h6, p, span, div, li, a {
     {/*  Navigation  */}
     <nav className="navbar" id="navbar">
         <div className="nav-container">
-            <a href="index" className="logo">
+            <a href="/" className="logo">
                 <img src="images/eaglone/p-eaglone.png" alt="ProWorldz Logo" className="logo-img" loading="lazy" /> 
                 <span className="logo-text">
                     PRO<span className="logo-accent">WORLDZ</span>
                 </span>
             </a>
 
-            <div className="menu-toggle" id="menuToggle">
+            <div className={"menu-toggle" + (isMobileMenuOpen ? " active" : "")} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
                 <span></span>
                 <span></span>
                 <span></span>
             </div>
 
-            <ul className="nav-links" id="navLinks">
-                <li><a href="index">Home</a></li>
-                <li><a href="about-home">About</a></li>
-                <li><a href="contact-home" className="active">Contact</a></li>
+            <ul className={"nav-links" + (isMobileMenuOpen ? " active" : "")} id="navLinks">
+                <li><a href="/">Home</a></li>
+                <li><a href="/about-home">About</a></li>
+                <li><a href="/contact-home" className="active">Contact</a></li>
             </ul>
 
-            <a href="login" className="nav-cta">
+            <a href="/login" className="nav-cta">
                 <i className="fas fa-sign-in-alt"></i>
                 Login
             </a>
