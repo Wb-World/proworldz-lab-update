@@ -3,12 +3,12 @@ const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const pool = new Pool({
-  host: process.env.DB_HOST || 'db.qqahllaidvbsccvenydb.supabase.co',
-  port: parseInt(process.env.DB_PORT || '5432', 10),
+  host: process.env.DB_HOST || 'aws-1-ap-northeast-1.pooler.supabase.com',
+  port: parseInt(process.env.DB_PORT || '6543', 10),
   database: process.env.DB_NAME || 'postgres',
-  user: process.env.DB_USER || 'postgres',
+  user: process.env.DB_USER || 'postgres.qqahllaidvbsccvenydb',
   password: process.env.DB_PASSWORD || 'secureworldzacademy',
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:secureworldzacademy@db.qqahllaidvbsccvenydb.supabase.co:5432/postgres',
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres.qqahllaidvbsccvenydb:secureworldzacademy@aws-1-ap-northeast-1.pooler.supabase.com:6543/postgres',
   ssl: {
     rejectUnauthorized: false
   }
