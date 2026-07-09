@@ -145,4 +145,30 @@ router.get('/auth/profile', async (req, res) => {
   }
 });
 
+// Diagnostic route to print exact database error
+router.get('/db-debug', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT NOW()');
+    return res.json({
+      success: true,
+      message: 'Database query succeeded!',
+      time: rows[0].now,
+      env: {
+        DB_HOST: process.env.DB_HOST ? 'Set' : 'Not Set (using fallback)',
+        DATABASE_URL: process.env.DATABASE_URL ? 'Set' : 'Not Set (using fallback)'
+      }
+    });
+  } catch (err) {
+    return res.json({
+      success: false,
+      message: err.message,
+      stack: err.stack,
+      env: {
+        DB_HOST: process.env.DB_HOST ? process.env.DB_HOST : 'Not Set (using fallback)',
+        DATABASE_URL: process.env.DATABASE_URL ? 'Set' : 'Not Set (using fallback)'
+      }
+    });
+  }
+});
+
 module.exports = router;
