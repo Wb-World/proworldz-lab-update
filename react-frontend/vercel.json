@@ -3,6 +3,6 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index.js" },
     { "source": "/admin/(.*)", "destination": "/api/index.js" },
-    { "source": "/((?!api|admin).*)$", "destination": "/index.html" }
+    { "source": "/((?!api|admin|assets|images|favicon.svg|eaglone).*)$", "destination": "/index.html" }
   ]
 }

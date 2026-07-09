@@ -9,8 +9,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Import routes from node-backend
-const apiRoutes = require('./node-backend/routes/api');
-const adminRoutes = require('./node-backend/routes/admin');
+const apiRoutes = require('../node-backend/routes/api');
+const adminRoutes = require('../node-backend/routes/admin');
 
 app.use('/api', apiRoutes);
 app.use('/admin', adminRoutes);
