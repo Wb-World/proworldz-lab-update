@@ -45,6 +45,14 @@ function App() {
       return;
     }
 
+    // Synchronously set user from localStorage if available to prevent race condition redirects
+    const cachedUser = localStorage.getItem('user');
+    if (cachedUser) {
+      try {
+        setUser(JSON.parse(cachedUser));
+      } catch (e) {}
+    }
+
     try {
       const res = await fetch('/api/auth/profile', {
         headers: {
