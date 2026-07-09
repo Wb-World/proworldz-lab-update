@@ -13,6 +13,14 @@ export default defineConfig({
             return req.url;
           }
         }
+      },
+      '/admin': {
+        target: 'http://localhost:3000',
+        bypass: function (req, res, options) {
+          if (req.url.includes('.tsx') || req.url.includes('.ts') || req.url.includes('.js')) {
+            return req.url;
+          }
+        }
       }
     }
   }

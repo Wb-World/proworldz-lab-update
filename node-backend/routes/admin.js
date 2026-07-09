@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 // In a real app we'd use JWT or sessions. 
 // Since this is an API, we should mock session state or implement JWT.

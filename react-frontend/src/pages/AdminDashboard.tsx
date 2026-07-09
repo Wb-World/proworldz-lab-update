@@ -18,7 +18,7 @@ export default function AdminDashboard() {
 
   const fetchStudents = async () => {
     try {
-      const res = await fetch('http://localhost:5000/admin/students');
+      const res = await fetch('/admin/students');
       const data = await res.json();
       if (data.success) {
         setStudents(data.data);
@@ -31,7 +31,7 @@ export default function AdminDashboard() {
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this student?')) return;
     try {
-      const res = await fetch(`http://localhost:5000/admin/students/${id}`, {
+      const res = await fetch(`/admin/students/${id}`, {
         method: 'DELETE'
       });
       const data = await res.json();

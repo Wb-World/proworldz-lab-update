@@ -38,7 +38,7 @@ router.get('/tasks', async (req, res) => {
   }
 });
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 // Real Database Student Login
 router.post('/auth/login', async (req, res) => {
@@ -74,7 +74,21 @@ router.post('/auth/login', async (req, res) => {
       return res.json({ 
         success: true, 
         token: token,
-        user: { id: user.id, name: user.name, email: user.email } 
+        user: { 
+          id: user.id, 
+          name: user.name, 
+          email: user.email,
+          gender: user.gender,
+          phone: user.phone,
+          dob: user.dob,
+          course: user.course,
+          eagle_coins: user.eagle_coins,
+          assignments: user.assignments,
+          assigns_complete: user.assigns_complete,
+          waiting_assigns: user.waiting_assigns,
+          access: user.access,
+          Avatars: user.Avatars
+        } 
       });
     } else {
       console.log(`[AUTH LOG] Login failed: Password mismatch for user "${email}".`);
@@ -83,6 +97,51 @@ router.post('/auth/login', async (req, res) => {
   } catch (error) {
     console.error('[AUTH LOG] Database query error during student login:', error);
     return res.json({ success: false, message: 'Database error' });
+  }
+});
+
+// Profile Route to fetch latest user data
+router.get('/auth/profile', async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ success: false, message: 'Unauthorized' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  if (!token || !token.startsWith('jwt-session-token-')) {
+    return res.status(401).json({ success: false, message: 'Invalid token' });
+  }
+
+  try {
+    const base64Email = token.replace('jwt-session-token-', '');
+    const email = Buffer.from(base64Email, 'base64').toString('utf8');
+    const [rows] = await db.query('SELECT * FROM app_users WHERE email = $1 LIMIT 1', [email]);
+    if (rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    const user = rows[0];
+    return res.json({
+      success: true,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        gender: user.gender,
+        phone: user.phone,
+        dob: user.dob,
+        course: user.course,
+        eagle_coins: user.eagle_coins,
+        assignments: user.assignments,
+        assigns_complete: user.assigns_complete,
+        waiting_assigns: user.waiting_assigns,
+        access: user.access,
+        Avatars: user.Avatars
+      }
+    });
+  } catch (error) {
+    console.error('[AUTH LOG] Error fetching profile:', error);
+    return res.status(500).json({ success: false, message: 'Database error' });
   }
 });
 
