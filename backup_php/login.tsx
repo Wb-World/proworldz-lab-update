@@ -8,20 +8,33 @@ export default function Component() {
   const [error, setError] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(false);
     
-    // Simulate network delay
-    setTimeout(() => {
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await response.json();
       setLoading(false);
-      if (email === 'user@example.com' && password === 'password123') {
+      
+      if (data.success) {
+        localStorage.setItem('user', JSON.stringify(data.user));
         navigate('/ss/dashboard');
       } else {
         setError(true);
       }
-    }, 1500);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+      setError(true);
+    }
   };
 
   return (

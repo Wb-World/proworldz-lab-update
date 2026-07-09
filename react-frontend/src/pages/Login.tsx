@@ -18,18 +18,33 @@ export default function Login() {
     setIsLoading(true);
     setError(false);
 
-    // Mock API call since Phase 5 is not ready
-    setTimeout(() => {
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await response.json();
       setIsLoading(false);
-      if (email === 'test@test.com' && password === 'password') {
+
+      if (data.success) {
         setBtnState('granted');
+        localStorage.setItem('user', JSON.stringify(data.user));
         setTimeout(() => navigate('/dashboard'), 1000);
       } else {
         setBtnState('denied');
         setError(true);
         setTimeout(() => setBtnState('normal'), 2000);
       }
-    }, 1500);
+    } catch (err) {
+      console.error(err);
+      setIsLoading(false);
+      setBtnState('denied');
+      setError(true);
+      setTimeout(() => setBtnState('normal'), 2000);
+    }
   };
 
   const handleKeyPress = (e: KeyboardEvent) => {

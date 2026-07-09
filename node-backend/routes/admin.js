@@ -14,7 +14,7 @@ router.post('/login', async (req, res) => {
   }
 
   try {
-    const [rows] = await db.query('SELECT * FROM admins WHERE username = ? LIMIT 1', [username]);
+    const [rows] = await db.query('SELECT * FROM admins WHERE username = $1 LIMIT 1', [username]);
     if (rows.length > 0) {
       const admin = rows[0];
       // Note: original PHP checked plain password for existing admin unless it was hashed?
@@ -35,7 +35,7 @@ router.post('/login', async (req, res) => {
 
 router.get('/students', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT id, name, email, phone, gender, address, mother_name, mother_phone, father_name, father_phone, dob, course, eagle_coins, assignments, assigns_complete, waiting_assigns, IPADDR, passw, access FROM users ORDER BY id DESC');
+    const [rows] = await db.query('SELECT id, name, email, phone, gender, address, mother_name, mother_phone, father_name, father_phone, dob, course, eagle_coins, assignments, assigns_complete, waiting_assigns, IPADDR, passw, access FROM app_users ORDER BY id DESC');
     res.json({ success: true, data: rows });
   } catch (error) {
     console.error(error);
@@ -56,12 +56,12 @@ router.post('/students', async (req, res) => {
   const password = "TEMP_PASS_" + Math.random().toString(36).substring(2, 8);
 
   try {
-    const [existing] = await db.query('SELECT id FROM users WHERE email = ? LIMIT 1', [email]);
+    const [existing] = await db.query('SELECT id FROM app_users WHERE email = $1 LIMIT 1', [email]);
     if (existing.length > 0) {
       return res.json({ success: false, message: 'Email already exists' });
     }
 
-    const query = `INSERT INTO users (id, name, gender, phone, address, mother_name, mother_phone, father_name, father_phone, email, dob, passw, eagle_coins, assignments, course, assigns_complete, waiting_assigns, access) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const query = `INSERT INTO app_users (id, name, gender, phone, address, mother_name, mother_phone, father_name, father_phone, email, dob, passw, eagle_coins, assignments, course, assigns_complete, waiting_assigns, access) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`;
     const values = [id, name, gender, phone, address, mother_name, mother_phone, father_name, father_phone, email, dob, password, eagle_coins, assignments, course, assigns_complete, waiting_assigns, access];
     
     await db.query(query, values);
@@ -80,7 +80,7 @@ router.put('/students/:id', async (req, res) => {
   } = req.body;
 
   try {
-    const query = `UPDATE users SET name=?, gender=?, phone=?, address=?, mother_name=?, mother_phone=?, father_name=?, father_phone=?, email=?, dob=?, course=?, eagle_coins=?, assignments=?, assigns_complete=?, waiting_assigns=?, access=? WHERE id=?`;
+    const query = `UPDATE app_users SET name=$1, gender=$2, phone=$3, address=$4, mother_name=$5, mother_phone=$6, father_name=$7, father_phone=$8, email=$9, dob=$10, course=$11, eagle_coins=$12, assignments=$13, assigns_complete=$14, waiting_assigns=$15, access=$16 WHERE id=$17`;
     const values = [name, gender, phone, address, mother_name, mother_phone, father_name, father_phone, email, dob, course, eagle_coins, assignments, assigns_complete, waiting_assigns, access, student_id];
     
     await db.query(query, values);
@@ -94,7 +94,7 @@ router.put('/students/:id', async (req, res) => {
 router.delete('/students/:id', async (req, res) => {
   const student_id = req.params.id;
   try {
-    await db.query('DELETE FROM users WHERE id=?', [student_id]);
+    await db.query('DELETE FROM app_users WHERE id=$1', [student_id]);
     res.json({ success: true, message: 'Student deleted successfully' });
   } catch (error) {
     console.error(error);
@@ -119,13 +119,13 @@ router.post('/admins', async (req, res) => {
   }
 
   try {
-    const [existing] = await db.query('SELECT username FROM admins WHERE username = ? LIMIT 1', [username]);
+    const [existing] = await db.query('SELECT username FROM admins WHERE username = $1 LIMIT 1', [username]);
     if (existing.length > 0) {
       return res.json({ success: false, message: 'Username already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    await db.query('INSERT INTO admins (username, password, role) VALUES (?, ?, ?)', [username, hashedPassword, role]);
+    await db.query('INSERT INTO admins (username, password, role) VALUES ($1, $2, $3)', [username, hashedPassword, role]);
     
     res.json({ success: true, message: 'Admin created successfully' });
   } catch (error) {
@@ -137,7 +137,7 @@ router.post('/admins', async (req, res) => {
 router.delete('/admins/:username', async (req, res) => {
   const username = req.params.username;
   try {
-    await db.query('DELETE FROM admins WHERE username=? AND role="admin"', [username]);
+    await db.query("DELETE FROM admins WHERE username=$1 AND role='admin'", [username]);
     res.json({ success: true, message: 'Admin deleted successfully' });
   } catch (error) {
     console.error(error);
